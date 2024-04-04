@@ -6,7 +6,7 @@ class Service:
         self._last_checked = None
         self._outage_start = None
         self._outage_end = None
-        self._subscribers = set()
+        self._subscribers = set()  # calledId
 
     # Getter for host
     @property
@@ -73,20 +73,10 @@ class Service:
     def subscribers(self):
         return self._subscribers
 
-    # Method to set (replace) all subscribers
-    @subscribers.setter
-    def subscribers(self, value):
-        if isinstance(value, set):
-            self._subscribers = value
-        else:
-            raise ValueError("Subscribers must be provided as a set")
-
     # Method to get a single subscriber if exists
     def get_subscriber(self, subscriber):
         if subscriber in self._subscribers:
             return subscriber
-        else:
-            return None
 
     # Method to add a single subscriber
     def add_subscriber(self, subscriber):
@@ -96,4 +86,3 @@ class Service:
     def remove_subscriber(self, subscriber):
         if subscriber in self._subscribers:
             self._subscribers.remove(subscriber)
-

@@ -30,10 +30,10 @@ class Caller:
         return self._subscribed
 
     # Method to add or update subscription
-    def add_subscription(self, host: str, port: int, polling_frequency):
+    def add_subscription(self, host, port, polling_frequency):
         self._subscribed[(host, port)] = polling_frequency
 
     # Method to remove subscription
-    def remove_subscription(self, host: str, port: int):
+    def remove_subscription(self, host, port):
         if (host, port) in self._subscribed:
             del self._subscribed[(host, port)]
