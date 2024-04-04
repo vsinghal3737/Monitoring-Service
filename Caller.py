@@ -2,7 +2,6 @@ class Caller:
     def __init__(self, name, callerId):
         self._name = name
         self._callerId = callerId
-
         self._subscribed = {}  # key: (host, port), value: polling_frequency
 
     # Getter for name

@@ -96,6 +96,4 @@ class Service:
     def remove_subscriber(self, subscriber):
         if subscriber in self._subscribers:
             self._subscribers.remove(subscriber)
-            return True
-        return False
 
