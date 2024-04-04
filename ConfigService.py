@@ -1,8 +1,8 @@
 from threading import Lock
 from datetime import datetime, timedelta
 
-from Caller import Caller
-from Service import Service
+from models.Caller import Caller
+from models.Service import Service
 
 
 class ConfigService:
