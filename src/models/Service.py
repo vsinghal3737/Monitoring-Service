@@ -1,9 +1,12 @@
+from datetime import datetime, timedelta
+
+
 class Service:
     def __init__(self, host, port):
         self._host = host
         self._port = port
+        self._last_checked = datetime.now() - timedelta(minutes=10)
         self._is_up = False
-        self._last_checked = None
         self._outage_start = None
         self._outage_end = None
         self._subscribers = set()  # calledId

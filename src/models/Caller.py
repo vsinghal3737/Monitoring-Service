@@ -1,8 +1,17 @@
+from datetime import datetime, timedelta
+
+
 class Caller:
     def __init__(self, name, callerId):
         self._name = name
         self._callerId = callerId
-        self._subscribed = {}  # key: (host, port), value: polling_frequency
+        self._subscribed = {}
+        # key: (host, port),
+            # value: {
+                # polling_frequency: deltatime,
+                # last_checked: datetime,
+                # status: bool
+        # }
 
     # Getter for name
     @property
@@ -31,7 +40,12 @@ class Caller:
 
     # Method to add or update subscription
     def add_subscription(self, host, port, polling_frequency):
-        self._subscribed[(host, port)] = polling_frequency
+        last_checked = datetime.now() - timedelta(minutes=10)
+        self._subscribed[(host, port)] = {
+            'polling_frequency': polling_frequency,
+            'last_checked': last_checked,
+            'last_status': False
+        }
 
     # Method to remove subscription
     def remove_subscription(self, host, port):
