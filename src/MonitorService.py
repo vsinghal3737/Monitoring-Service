@@ -7,9 +7,10 @@ from datetime import datetime, timedelta
 from threading import Thread, Event
 from time import sleep
 
-from ConfigService import ConfigService
+from src.ConfigService import ConfigService
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 class MonitorService(ConfigService):
     DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -65,7 +66,7 @@ class MonitorService(ConfigService):
 
     def __notify_subscribers(self, service):
         log_message = f"Service {service.host}:{service.port} is {'up' if service.is_up else 'down'}"
-        logging.info(log_message)
+        logging.debug(log_message)
 
         for callerId in service.subscribers:
             time_now = datetime.now()

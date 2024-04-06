@@ -2,8 +2,8 @@ import logging
 from threading import Lock
 from datetime import datetime, timedelta
 
-from models.Caller import Caller
-from models.Service import Service
+from src.models.Caller import Caller
+from src.models.Service import Service
 
 
 class ConfigService:
