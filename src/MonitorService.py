@@ -1,3 +1,4 @@
+import logging
 import socket
 
 from collections import defaultdict
@@ -8,6 +9,7 @@ from time import sleep
 
 from ConfigService import ConfigService
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class MonitorService(ConfigService):
     DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -18,15 +20,15 @@ class MonitorService(ConfigService):
         self.shutdown_event = shutdown_event or Event()
         self.check_thread = Thread(target=self.check_services, daemon=True)
         self.check_thread.start()
-
+        logging.info("MonitorService initialized and monitoring thread started.")
 
     def check_services(self):
         while True:
             if len(self.services) != 0:
 
                 with ThreadPoolExecutor(max_workers=len(self.services)) as executor:
-                    future_to_service = {}
 
+                    future_to_service = {}
                     for (host, port) in self.services.keys():
                         service = self.services[(host, port)]
                         time_now = datetime.now()
@@ -43,9 +45,8 @@ class MonitorService(ConfigService):
                                 self.__notify_subscribers(service)
 
                         except Exception as exc:
-                            print(f'{host}:{port} generated an exception: {exc}')
-            else:
-                print('big lol')
+                            logging.error(f'{host}:{port} generated an exception: {exc}')
+
             sleep(1)
 
     def __check_service_status(self, host, port, time_now):
@@ -58,12 +59,14 @@ class MonitorService(ConfigService):
                 status = False
             except Exception as e:
                 status = False
-                print(f"__check_service_status() - ERROR: {e}")
+                logging.error(f"__check_service_status() - ERROR: {e}")
+                break
         return status
 
     def __notify_subscribers(self, service):
-        log = f"Service {service.host}:{service.port} is {'up' if service.is_up else 'down'}"
-        print(log)
+        log_message = f"Service {service.host}:{service.port} is {'up' if service.is_up else 'down'}"
+        logging.info(log_message)
+
         for callerId in service.subscribers:
             time_now = datetime.now()
             caller = self.callers[callerId]
@@ -74,10 +77,8 @@ class MonitorService(ConfigService):
             if last_checked + polling_frequency <= time_now:
                 caller.subscribed[(service.host, service.port)]['last_checked'] = time_now
                 caller.subscribed[(service.host, service.port)]['status'] = service.is_up
-                print(f"Notifying {caller.name} Subscriber -> ", end='')
-                print(log)
-
-                self.logs[caller.callerId].append(log)
+                logging.info(f"Notifying {caller.name} about service status change: {log_message}")
+                self.logs[caller.callerId].append(log_message)
 
     @staticmethod
     def should_check_status(service, time_now):
