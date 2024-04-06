@@ -86,8 +86,30 @@ Models define the data structures used by the application:
   - **Key Features**:
     - Holds service details, including status, outage schedules, and subscriber lists.
 
+#### Running Unit Tests
+To run unit tests effectively, it's necessary to ensure that the `src` directory is appropriately referenced in the import statements. This can be done by prefixing `src.` to the module paths in the following files:
+
+- **main.py**:
+  - Change import statements to:
+    ```python
+    from src.MonitorService import MonitorService
+    from src.DummyServices.DummyServicesCreationAndDeletion import PORTS, DummyServiceMain
+    ```
+- **ConfigService.py**:
+  - Modify import statements to:
+    ```python
+    from src.models.Service import Service
+    from src.models.Caller import Caller
+    ```
+- **MonitorService.py**:
+  - Update the import statement to:
+    ```python
+    from src.ConfigService import ConfigService
+    ```
+These adjustments are necessary to ensure that Python can locate and import the modules correctly when the unit tests are executed, especially when the tests are run from a different directory that might not recognize the project's structure without the `src.` prefix.
 
 ### Running the Application
+
 #### Running Default Setup
 To run the application, navigate to the `src` directory and execute `main.py`:
 
