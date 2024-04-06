@@ -1,7 +1,7 @@
 import threading
 import signal
-from src.MonitorService import MonitorService
-from src.DummyServices.DummyServicesCreationAndDeletion import PORTS, DummyServiceMain
+from MonitorService import MonitorService
+from DummyServices.DummyServicesCreationAndDeletion import PORTS, DummyServiceMain
 
 shutdown_event = threading.Event()
 
