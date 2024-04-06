@@ -33,7 +33,7 @@ class MonitorService(ConfigService):
                     for (host, port) in self.services.keys():
                         service = self.services[(host, port)]
                         time_now = datetime.now()
-                        if self.should_check_status(service, time_now):
+                        if self.__is_service_check_allowed(service, time_now):
                             future_to_service[executor.submit(self.__check_service_status, host, port, time_now)] = (host, port)
 
                     for future in as_completed(future_to_service):
@@ -82,6 +82,6 @@ class MonitorService(ConfigService):
                 self.logs[caller.callerId].append(log_message)
 
     @staticmethod
-    def should_check_status(service, time_now):
+    def __is_service_check_allowed(service, time_now):
         return service.last_checked + timedelta(seconds=1) <= time_now and \
                not (service.outage_start and service.outage_end and (service.outage_start <= time_now <= service.outage_end))

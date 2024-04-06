@@ -7,7 +7,7 @@ shutdown_event = threading.Event()
 
 
 def start_dummy_services():
-    # Start DummyServices and pass the shutdown event
+    # Start DummyServices
     services = DummyServiceMain(shutdown_event)
     return services
 
@@ -34,7 +34,7 @@ def setup_config_service(monitor_service):
 
 
 def shutdown_handler(signum, frame):
-    # Set the shutdown event when a signal is received (e.g., SIGINT for KeyboardInterrupt)
+    # Triggered when SIGINT received via KeyboardInterrupt
     shutdown_event.set()
 
 
@@ -49,7 +49,7 @@ def main():
 
     # Wait for the threads to complete upon shutdown signal
     dummy_service_thread.join()
-    monitor_service.join()  # Make sure to have a join method in MonitorService
+    monitor_service.join()
 
 
 if __name__ == "__main__":
