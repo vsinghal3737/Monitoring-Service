@@ -1,14 +1,14 @@
 from threading import Lock
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from src.models.Caller import Caller
-from src.models.Service import Service
+from models.Caller import Caller
+from models.Service import Service
 
 
 class ConfigService:
 
     def __init__(self, grace_time):
-        self.grace_time = grace_time
+        self.grace_time = timedelta(seconds=grace_time)
         self.lock = Lock()
         self.services = {}
         self.callers = {}
@@ -52,12 +52,13 @@ class ConfigService:
                 del self.callers[callerId]
 
     def subscribe_service(self, host, port, callerId, polling_frequency):
+        polling_frequency = timedelta(seconds=polling_frequency)
         with self.lock:
             if (host, port) in self.services and callerId in self.callers:
                 caller = self.callers[callerId]
                 service = self.services[(host, port)]
 
-                caller.add_subscription(host, port, polling_frequency)
+                caller.add_subscription(host, port, max(polling_frequency, self.grace_time))
                 service.add_subscriber(callerId)
                 return True
 
@@ -67,5 +68,5 @@ class ConfigService:
                 caller = self.callers[callerId]
                 service = self.services[(host, port)]
 
-                caller.remove_subscription((host, port))
+                caller.remove_subscription(host, port)
                 service.remove_subscriber(callerId)

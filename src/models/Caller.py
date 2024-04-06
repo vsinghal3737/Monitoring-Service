@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 
 
 class Caller:
+    DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
     def __init__(self, name, callerId):
         self._name = name
         self._callerId = callerId
@@ -51,3 +53,11 @@ class Caller:
     def remove_subscription(self, host, port):
         if (host, port) in self._subscribed:
             del self._subscribed[(host, port)]
+
+    def __repr__(self):
+        subscriptions_repr = ', '.join(
+            [
+                f"{host_port}: {{'polling_frequency': {sub['polling_frequency']}, 'last_checked': {sub['last_checked'].strftime(Caller.DATE_FORMAT)}, 'last_status': {sub['last_status']}}}"
+                for host_port, sub in self._subscribed.items()]
+        )
+        return f"Caller(name={self._name!r}, callerId={self._callerId!r}, subscribed={{{subscriptions_repr}}})"

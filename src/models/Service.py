@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 
 
 class Service:
+    DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
     def __init__(self, host, port):
         self._host = host
         self._port = port
@@ -89,3 +91,11 @@ class Service:
     def remove_subscriber(self, subscriber):
         if subscriber in self._subscribers:
             self._subscribers.remove(subscriber)
+
+    def __repr__(self):
+        outage_info = f"Outage from {self._outage_start.strftime(Service.DATE_FORMAT)} to {self._outage_end.strftime(Service.DATE_FORMAT)}" if self._outage_start and self._outage_end else "No outage recorded"
+        subscribers_repr = ', '.join([str(subscriber) for subscriber in self._subscribers]) or "No subscribers"
+        return (
+            f"Service(host={self._host!r}, port={self._port}, is_up={self._is_up}, "
+            f"last_checked={self._last_checked.strftime(Service.DATE_FORMAT)}, {outage_info}, subscribers=[{subscribers_repr}])"
+        )
