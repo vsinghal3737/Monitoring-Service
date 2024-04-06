@@ -47,7 +47,7 @@ def manage_servers(servers):
                 server.join()
 
 
-def main():
+def DummyServicesTemp():
     ports = [8010, 8020, 8030]
 
     servers = {}
@@ -61,4 +61,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    DummyServicesTemp()
