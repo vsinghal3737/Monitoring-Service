@@ -3,45 +3,49 @@ import socket
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
-from threading import Thread
+from threading import Thread, Event
 from time import sleep
 
-from src.ConfigService import ConfigService
+from ConfigService import ConfigService
 
 
 class MonitorService(ConfigService):
     DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
-    def __init__(self, grace_time=10):
-        super().__init__(timedelta(seconds=grace_time))
+    def __init__(self, grace_time=10, shutdown_event=None):
+        super().__init__(grace_time)
         self.logs = defaultdict(list)
-
+        self.shutdown_event = shutdown_event or Event()
         self.check_thread = Thread(target=self.check_services, daemon=True)
         self.check_thread.start()
 
+
     def check_services(self):
         while True:
-            with ThreadPoolExecutor(max_workers=len(self.services)) as executor:
-                future_to_service = {}
+            if len(self.services) != 0:
 
-                for (host, port) in self.services.keys():
-                    service = self.services[(host, port)]
-                    time_now = datetime.now()
-                    if service.last_checked + timedelta(seconds=1) <= time_now and \
-                            not (service.outage_start <= time_now <= service.outage_end):
-                        future_to_service[executor.submit(self.__check_service_status, host, port, time_now)] = (host, port)
+                with ThreadPoolExecutor(max_workers=len(self.services)) as executor:
+                    future_to_service = {}
 
-                for future in as_completed(future_to_service):
-                    host, port = future_to_service[future]
-                    try:
-                        status = future.result()
-                        with self.lock:
-                            service = self.services[(host, port)]
-                            service.is_up = status
-                            self.__notify_subscribers(service)
+                    for (host, port) in self.services.keys():
+                        service = self.services[(host, port)]
+                        time_now = datetime.now()
+                        if self.should_check_status(service, time_now):
+                            future_to_service[executor.submit(self.__check_service_status, host, port, time_now)] = (host, port)
 
-                    except Exception as exc:
-                        print(f'{host}:{port} generated an exception: {exc}')
+                    for future in as_completed(future_to_service):
+                        host, port = future_to_service[future]
+                        try:
+                            status = future.result()
+                            with self.lock:
+                                service = self.services[(host, port)]
+                                service.is_up = status
+                                self.__notify_subscribers(service)
+
+                        except Exception as exc:
+                            print(f'{host}:{port} generated an exception: {exc}')
+            else:
+                print('big lol')
             sleep(1)
 
     def __check_service_status(self, host, port, time_now):
@@ -75,3 +79,7 @@ class MonitorService(ConfigService):
 
                 self.logs[caller.callerId].append(log)
 
+    @staticmethod
+    def should_check_status(service, time_now):
+        return service.last_checked + timedelta(seconds=1) <= time_now and \
+               not (service.outage_start and service.outage_end and (service.outage_start <= time_now <= service.outage_end))
