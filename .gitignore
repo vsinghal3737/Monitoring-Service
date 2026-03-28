@@ -1,6 +1,43 @@
-# Byte-compiled / optimized / DLL files
+# Python bytecode
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
 
-# PyCharm-specific files
+# Python tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# AI agent config
+.claude/
+.codex/
+AGENTS.md
+CLAUDE.md
+
+# Packaging artifacts
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# Editor and IDE files
 .idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db

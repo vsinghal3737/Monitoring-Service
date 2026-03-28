@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from threading import Thread, Event
 from time import sleep
 
-from ConfigService import ConfigService
+from src.ConfigService import ConfigService
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
