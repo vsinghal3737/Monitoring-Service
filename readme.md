@@ -9,8 +9,6 @@ Monitoring-Service is now organized as a two-track workspace:
 
 ```text
 Monitoring-Service/
-  .claude/   # Claude-specific repo skills and agents
-  .codex/    # Codex-specific repo skills
   v1/        # archived legacy implementation
     src/
     test/
